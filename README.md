@@ -2,7 +2,7 @@
 
 Captures a log message as well as contextual info: line number, variable contents.  Allows for tracking differences.  
 
-![img.png](img.png)
+![Context logging -> clogging](clogging-blue-shirt.gif)
 Context logging -> clogging
 
 ## Future plans

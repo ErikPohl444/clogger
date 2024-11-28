@@ -1,29 +1,55 @@
-# This is a sample Python script.
 import copy
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 import inspect
 from jsondiff import diff
 
-class clogger:
 
-    def __init__(self):
-        self.clogging = []
+class Clogger:
+
+    def __init__(self, diff_only):
+        self._clogging = []
+        self.diff_only = diff_only
+        if not self.diff_only:
+            self.diff_only = False
+        self.last_locals = None
+        self.last_globals = None
 
     def clog(self, comment):
+        locals_retval = copy.copy(locals())
+        globals_retval = copy.copy(globals())
         retval = {'lineno': inspect.currentframe().f_back.f_lineno,
                   'comment': comment,
-                  'locals': copy.copy(locals()),
-                  'globals': copy.copy(globals())
+                  'locals': locals_retval,
+                  'globals': globals_retval
                   }
-        self.clogging.append(retval)
+        if self.diff_only and len(self._clogging) >= 1:
+            retval = {'lineno': inspect.currentframe().f_back.f_lineno,
+                      'comment': comment,
+                      'locals': diff(self.last_locals, locals_retval),
+                      'globals': diff(self.last_globals, globals_retval)
+                      }
+        else:
+            retval = {'lineno': inspect.currentframe().f_back.f_lineno,
+                      'comment': comment,
+                      'locals': locals_retval,
+                      'globals': globals_retval
+                      }
+
+        self._clogging.append(retval)
+
+        self.last_globals = globals_retval
+        self.last_locals = locals_retval
+
         return retval
 
-    def getclogging(self):
-        return self.clogging
-# Press the green button in the gutter to run the script.
+    def get_clogging(self, index):
+        return self._clogging[index]
+
+    def get_all_clogging(self):
+        return self._clogging
+
+
 if __name__ == '__main__':
-    a = clogger()
+    a = Clogger(True)
     b = 1
     print(a.clog('testing initial clog'))
     b = 2
@@ -31,9 +57,11 @@ if __name__ == '__main__':
     b = 3
     print(a.clog('testing third clog'))
     print('-----------------------')
-    for clog_no, clog_val in enumerate(a.clogging):
+    for clog_no, clog_val in enumerate(a.get_all_clogging()):
         print(clog_val)
         if clog_no > 0:
-            print(diff(a.clogging[clog_no-1]['globals'], a.clogging[clog_no]['globals']))
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+            x = a.get_clogging(clog_no-1)
+            y = a.get_clogging(clog_no)
+            print(diff(x['globals'], y['globals']))
+    print('-----------------------')
+    print(a.get_all_clogging())

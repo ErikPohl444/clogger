@@ -2,6 +2,7 @@ import copy
 import inspect
 from jsondiff import diff
 from _datetime import datetime
+import dill
 
 
 class Clogger:
@@ -40,16 +41,27 @@ class Clogger:
     def get_all_clogging(self):
         return self._clogging
 
+    def save_log(self, fname):
+        dill.dump(self._clogging, open(fname, "wb"))
+
+    def load_log(self, fname):
+        dill.load(self._clogging, open(fname, "rb"))
 
 if __name__ == '__main__':
     a = Clogger(True)
+    a.load_log("myClog.p")
+    print(a.get_all_clogging())
+    exit(1)
+
+
+
     b = 1
     print(a.clog('testing initial clog'))
-    exit(1)
     b = 2
     print(a.clog('testing second clog'))
     b = 3
     print(a.clog('testing third clog'))
+    a.save_log("myClog.p")
     print('-----------------------')
     for clog_no, clog_val in enumerate(a.get_all_clogging()):
         print(clog_val)

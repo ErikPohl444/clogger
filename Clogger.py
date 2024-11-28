@@ -18,24 +18,17 @@ class Clogger:
         timestamp_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         locals_retval = copy.copy(locals())
         globals_retval = copy.copy(globals())
+        retval = {
+            'timestamp': timestamp_str,
+            'lineno': inspect.currentframe().f_back.f_lineno,
+            'comment': comment,
+            'locals': locals_retval,
+            'globals': globals_retval
+        }
         if self.diff_only and len(self._clogging) >= 1:
-            retval = {'timestamp': timestamp_str,
-                      'lineno': inspect.currentframe().f_back.f_lineno,
-                      'comment': comment,
-                      'locals': diff(self.last_locals, locals_retval),
-                      'globals': diff(self.last_globals, globals_retval)
-                      }
-        else:
-            retval = {
-                        'timestamp': timestamp_str,
-                        'lineno': inspect.currentframe().f_back.f_lineno,
-                        'comment': comment,
-                        'locals': locals_retval,
-                        'globals': globals_retval
-                      }
-
+            retval['globals'] = diff(self.last_globals, globals_retval)
+            retval['locals'] = diff(self.last_locals, locals_retval)
         self._clogging.append(retval)
-
         self.last_globals = globals_retval
         self.last_locals = locals_retval
 

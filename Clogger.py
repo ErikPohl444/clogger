@@ -1,6 +1,7 @@
 import copy
 import inspect
 from jsondiff import diff
+from _datetime import datetime
 
 
 class Clogger:
@@ -14,24 +15,23 @@ class Clogger:
         self.last_globals = None
 
     def clog(self, comment):
+        timestamp_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         locals_retval = copy.copy(locals())
         globals_retval = copy.copy(globals())
-        retval = {'lineno': inspect.currentframe().f_back.f_lineno,
-                  'comment': comment,
-                  'locals': locals_retval,
-                  'globals': globals_retval
-                  }
         if self.diff_only and len(self._clogging) >= 1:
-            retval = {'lineno': inspect.currentframe().f_back.f_lineno,
+            retval = {'timestamp': timestamp_str,
+                      'lineno': inspect.currentframe().f_back.f_lineno,
                       'comment': comment,
                       'locals': diff(self.last_locals, locals_retval),
                       'globals': diff(self.last_globals, globals_retval)
                       }
         else:
-            retval = {'lineno': inspect.currentframe().f_back.f_lineno,
-                      'comment': comment,
-                      'locals': locals_retval,
-                      'globals': globals_retval
+            retval = {
+                        'timestamp': timestamp_str,
+                        'lineno': inspect.currentframe().f_back.f_lineno,
+                        'comment': comment,
+                        'locals': locals_retval,
+                        'globals': globals_retval
                       }
 
         self._clogging.append(retval)

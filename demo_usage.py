@@ -26,4 +26,4 @@ if __name__ == '__main__':
             y = a.get_clogging(clog_no)
             print(diff(x['locals'], y['locals']))
     print('-----------------------')
-    #print(a.get_all_clogging())
+    # print(a.get_all_clogging())

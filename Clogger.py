@@ -47,16 +47,15 @@ class Clogger:
         dill.dump(self._clogging, open(fname, "wb"))
 
     def load_log(self, fname):
-        dill.load(self._clogging, open(fname, "rb"))
+        with open(fname, "rb") as fhandle:
+            self._clogging = dill.load(fhandle)
+
+    def purge_log(self):
+        self._clogging = []
+
 
 if __name__ == '__main__':
     a = Clogger(True)
-#    a.load_log("myClog.p")
-#    print(a.get_all_clogging())
-#    exit(1)
-
-
-
     b = 1
     print(a.clog('testing initial clog'))
     b = 2
@@ -72,4 +71,7 @@ if __name__ == '__main__':
             y = a.get_clogging(clog_no)
             print(diff(x['globals'], y['globals']))
     print('-----------------------')
+    print(a.get_all_clogging())
+    a.save_log("myClog.p")
+    a.load_log("myClog.p")
     print(a.get_all_clogging())

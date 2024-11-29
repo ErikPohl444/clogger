@@ -24,8 +24,10 @@ class Clogger:
             'lineno': inspect.currentframe().f_back.f_lineno,
             'comment': comment,
             'locals': locals_retval,
-            'globals': globals_retval
+            'globals': globals_retval,
+            'co_name': inspect.currentframe().f_back.f_code.co_name
         }
+        # use co_name to determine if a frame shift has occurred
         if self.diff_only and len(self._clogging) >= 1:
             retval['globals'] = diff(self.last_globals, globals_retval)
             retval['locals'] = diff(self.last_locals, locals_retval)
@@ -49,9 +51,9 @@ class Clogger:
 
 if __name__ == '__main__':
     a = Clogger(True)
-    a.load_log("myClog.p")
-    print(a.get_all_clogging())
-    exit(1)
+#    a.load_log("myClog.p")
+#    print(a.get_all_clogging())
+#    exit(1)
 
 
 

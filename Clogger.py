@@ -3,6 +3,7 @@ import inspect
 from jsondiff import diff
 from _datetime import datetime
 import dill
+import uuid
 
 
 class Clogger:
@@ -16,10 +17,12 @@ class Clogger:
         self._last_globals = None
 
     def clog(self, comment):
+        clog_uuid = uuid.uuid4()
         timestamp_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         locals_retval = copy.copy(locals())
         globals_retval = copy.copy(globals())
         retval = {
+            'clog_uuid': clog_uuid,
             'timestamp': timestamp_str,
             'lineno': inspect.currentframe().f_back.f_lineno,
             'comment': comment,

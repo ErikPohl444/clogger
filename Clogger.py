@@ -12,8 +12,8 @@ class Clogger:
         self.diff_only = diff_only
         if not self.diff_only:
             self.diff_only = False
-        self.last_locals = None
-        self.last_globals = None
+        self._last_locals = None
+        self._last_globals = None
 
     def clog(self, comment):
         timestamp_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -29,11 +29,11 @@ class Clogger:
         }
         # use co_name to determine if a frame shift has occurred
         if self.diff_only and len(self._clogging) >= 1:
-            retval['globals'] = diff(self.last_globals, globals_retval)
-            retval['locals'] = diff(self.last_locals, locals_retval)
+            retval['globals'] = diff(self._last_globals, globals_retval)
+            retval['locals'] = diff(self._last_locals, locals_retval)
         self._clogging.append(retval)
-        self.last_globals = globals_retval
-        self.last_locals = locals_retval
+        self._last_globals = globals_retval
+        self._last_locals = locals_retval
 
         return retval
 
